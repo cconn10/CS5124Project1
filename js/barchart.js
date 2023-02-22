@@ -1,14 +1,15 @@
 class BarChart {
-
-    constructor(_config, _data) {
+    
+    constructor(_config, _data, _discriminator) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 500,
-            containerHeight: _config.containerHeight || 300,
+            containerWidth: _config.containerWidth || 200,
+            containerHeight: _config.containerHeight || 200,
             margin: { top: 5, right: 10, bottom: 30, left: 50 }
         }
 
         this.data = _data
+        this.discriminator = _discriminator
 
         this.initVis()
     }
@@ -19,7 +20,23 @@ class BarChart {
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom
 
-        vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_snum)
+        const BLANK_MSG = "[Blank]"
+        const STAR_TYPES = ["A", "F", "G", "K", "M"]
+
+        switch (vis.discriminator) {
+            case "star_count":
+                vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_snum)
+                break
+            case "planet_count":
+                vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_pnum)
+                break
+            case "star_type":
+                vis.values = d3.rollup(vis.data, d => d.length, d => STAR_TYPES.includes(d.st_spectype[0].toUpperCase()) ? d.st_spectype[0].toUpperCase() : BLANK_MSG)
+                break
+            case "discovery_method": 
+                vis.values = d3.rollup(vis.data, d => d.length, d => d.discoverymethod)
+                break
+        }
 
         vis.chart = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
@@ -53,15 +70,17 @@ class BarChart {
         vis.xValue = d => d[0]
         vis.yValue = d => d[1]
 
-        console.log()
+        console.log(vis.values)
         vis.xScale.domain(Array.from(vis.values.keys()).reverse())
-        vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))])
+        vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))]).nice()
 
         vis.renderVis()
     }
 
     renderVis() {
         let vis = this
+
+        console.log(vis.values)
 
         vis.values.forEach(d => {
             console.log(vis.xScale(vis.xValue(d)))
@@ -81,5 +100,21 @@ class BarChart {
         vis.yAxisGroup.call(vis.yAxis)
     }
 
+    handleData() {
+        const BLANK_MSG =  "[Blank]"
+
+        switch (vis.discriminator) {
+            case "star_count":
+                vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_snum)
+                break
+            case "planet_count":
+                vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_pnum)
+                break
+            case "star_type":
+                console.log(d3.rollup(vis.data, d => d.length, d => d.st_specType == BLANK_MSG ? BLANK_MSG : d.st_specType[0]))
+                vis.values = d3.rollup(vis.data, d => d.length, d => d.st_specType == BLANK_MSG ? BLANK_MSG : d.st_specType[0])
+                break
+        }
+    }
 
 }
