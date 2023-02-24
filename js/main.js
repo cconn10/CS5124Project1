@@ -7,18 +7,21 @@ d3.csv('data/exoplanets.csv')
             d.sy_dist = +d.sy_dist
             if(d.st_spectype == "")
                 d.st_spectype = "[Blank]"
+            d.disc_year = d.disc_year
         })
 
 
-        const starChart = new BarChart({parentElement: '#vis'}, data, "star_count")
-        const planetChart = new BarChart({parentElement: '#vis2'}, data, "planet_count")
-        const starTypeChart = new BarChart({parentElement: '#vis3'}, data, "star_type")
-        const discoverymethodChart = new BarChart({parentElement: '#vis4'}, data, "discovery_method")
+        const starCount = new BarChart({parentElement: '#vis'}, data, "star_count")
+        const planetCount = new BarChart({parentElement: '#vis2'}, data, "planet_count")
+        const starType = new BarChart({parentElement: '#vis3'}, data, "star_type")
+        const discoveryMethod = new BarChart({parentElement: '#vis4'}, data, "discovery_method")
+        const discoveryPerYear = new LineChart({parentElement: '#vis5'}, data)
         const distFromUs = new Histogram({parentElement: '#vis5'}, data, "discovery_method")
 
-        starChart.updateVis()
-        planetChart.updateVis()
-        starTypeChart.updateVis()
-        discoverymethodChart.updateVis()
+        starCount.updateVis()
+        planetCount.updateVis()
+        starType.updateVis()
+        discoveryMethod.updateVis()
+        discoveryPerYear.updateVis()
         distFromUs.updateVis()
     })

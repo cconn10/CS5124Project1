@@ -70,7 +70,6 @@ class BarChart {
         vis.xValue = d => d[0]
         vis.yValue = d => d[1]
 
-        console.log(vis.values)
         vis.xScale.domain(Array.from(vis.values.keys()).reverse())
         vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))]).nice()
 
@@ -79,12 +78,6 @@ class BarChart {
 
     renderVis() {
         let vis = this
-
-        console.log(vis.values)
-
-        vis.values.forEach(d => {
-            console.log(vis.xScale(vis.xValue(d)))
-        });
         
         vis.chart.selectAll('.bar')
             .data(vis.values)
@@ -99,22 +92,4 @@ class BarChart {
         vis.xAxisGroup.call(vis.xAxis)
         vis.yAxisGroup.call(vis.yAxis)
     }
-
-    handleData() {
-        const BLANK_MSG =  "[Blank]"
-
-        switch (vis.discriminator) {
-            case "star_count":
-                vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_snum)
-                break
-            case "planet_count":
-                vis.values = d3.rollup(vis.data, d => d.length, d => d.sy_pnum)
-                break
-            case "star_type":
-                console.log(d3.rollup(vis.data, d => d.length, d => d.st_specType == BLANK_MSG ? BLANK_MSG : d.st_specType[0]))
-                vis.values = d3.rollup(vis.data, d => d.length, d => d.st_specType == BLANK_MSG ? BLANK_MSG : d.st_specType[0])
-                break
-        }
-    }
-
 }
