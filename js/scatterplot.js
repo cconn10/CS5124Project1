@@ -1,6 +1,6 @@
-class Histogram {
+class Scatterplot {
     
-    constructor(_config, _data) {
+    constructor(_config, _data, _discriminator) {
         this.config = {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 200,
@@ -9,6 +9,7 @@ class Histogram {
         }
 
         this.data = _data
+        this.discriminator = _discriminator
 
         this.initVis()
     }
@@ -47,33 +48,28 @@ class Histogram {
     updateVis() {
         let vis = this
 
-        vis.xValue = d => d.sy_dist
-        vis.yValue = d => d.length
-        
-        vis.bins = d3.bin()
-        .thresholds(10)
-        .value(d => d.sy_dist)
-        
-        vis.values = vis.bins(vis.data)
+        console.log(vis.data)
 
-        vis.xScale.domain([0, d3.max(vis.values, d => d.x1)])
-        vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))]).nice()
+        vis.xValue = d => d.pl_rade
+        vis.yValue = d => d.pl_bmasse
+
+        vis.xScale.domain([0, d3.max(vis.data, d => vis.xValue(d))]).nice()
+        vis.yScale.domain([0, d3.max(vis.data, d => vis.yValue(d))]).nice()
 
         vis.renderVis()
     }
 
     renderVis() {
         let vis = this
-
-        vis.chart.selectAll('.bar')
-            .data(vis.values)
-            .join('rect')
-                .attr('class', 'bar')
+        
+        vis.chart.selectAll('.point')
+            .data(vis.data)
+            .join('circle')
+                .attr('class', 'point')
                 .attr('fill', 'steelblue')
-                .attr('x', 0)
-                .attr('transform', d => `translate(${vis.xScale(d.x0)}, ${vis.yScale(vis.yValue(d))})`)
-                .attr('width', d => vis.xScale(d.x1) - vis.xScale(d.x0) - 1)
-                .attr('height', d => vis.height - vis.yScale(vis.yValue(d)))
+                .attr('cy', d => vis.yScale(vis.yValue(d)) )
+                .attr('cx', d => vis.xScale(vis.xValue(d)))
+                .attr('r', 4)
                 
         vis.xAxisGroup.call(vis.xAxis)
         vis.yAxisGroup.call(vis.yAxis)

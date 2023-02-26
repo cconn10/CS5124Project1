@@ -5,7 +5,7 @@ class LineChart {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 900,
             containerHeight: _config.containerHeight || 200,
-            margin: { top: 5, right: 10, bottom: 30, left: 50 }
+            margin: { top: 15, right: 10, bottom: 30, left: 50 }
         }
 
         this.data = _data
@@ -21,8 +21,6 @@ class LineChart {
 
         vis.values = Array.from(d3.rollup(vis.data, d => d.length, d=>d.disc_year)).sort((x, y) => x[0] - y[0])
 
-        console.log(vis.values)
-
         vis.chart = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
             .attr('height', vis.config.containerHeight)
@@ -36,7 +34,7 @@ class LineChart {
             .range([vis.height, 0])
 
         vis.xAxis = d3.axisBottom(vis.xScale)
-        .tickFormat(d3.timeFormat("%Y"))
+            .tickFormat(d3.timeFormat("%Y"))
         vis.yAxis = d3.axisLeft(vis.yScale).ticks(5)
 
         vis.xAxisGroup = vis.chart.append('g')
@@ -59,16 +57,13 @@ class LineChart {
 
         vis.xScale.domain(d3.extent(vis.values.map(d => vis.xValue(d))))
 
-        vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))])
-        .nice()
+        vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))]).nice()
 
         vis.renderVis()
     }
 
     renderVis() {
         let vis = this
-
-        console.log(vis.values)
 
         vis.chart.append('path')
             .data([vis.values])
