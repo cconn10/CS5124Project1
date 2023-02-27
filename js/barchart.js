@@ -5,7 +5,7 @@ class BarChart {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 300,
             containerHeight: _config.containerHeight || 300,
-            margin: { top: 15, right: 10, bottom: 30, left: 50 }
+            margin: { top: 20, right: 10, bottom: 60, left: 50 }
         }
 
         this.data = _data
@@ -48,6 +48,10 @@ class BarChart {
                 break
             case "discovery_method": 
                 vis.values = d3.rollup(vis.data, d => d.length, d => d.discoverymethod)
+                vis.values.forEach(value => {
+                    
+                });
+
                 xAxisTitle = "Discovery Method"
                 yAxisTitle = "Number of Exoplanets"
                 chartTitle = "Exoplanets by Discovery Method"
@@ -81,23 +85,55 @@ class BarChart {
 
         vis.chart.append('text')
             .attr('class', 'axis-title')
-            .attr('y', vis.height - 15)
-            .attr('x', vis.width + 10)
+            .attr('y', vis.height + vis.config.margin.top )
+            .attr('x', vis.width / 2)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text(xAxisTitle)
         
         vis.chart.append('text')
             .attr('class', 'axis-title')
-            .attr('y', 0)
+            .attr('y', -vis.config.margin.left)
+            .attr('x', -vis.height + vis.config.margin.bottom)
+            .attr('dy', '.71em')
+            .attr('transform', `rotate(-90)`)
+            .text(yAxisTitle)
+
+        vis.chart.append('text')
+            .attr('class', 'chart-title')
+            .attr('y', -vis.config.margin.top)
             .attr('x', 0)
             .attr('dy', '.71em')
-            .text(yAxisTitle)
+            .text(chartTitle)
 
     }
 
     updateVis() {
         let vis = this
+
+        if(vis.discriminator == "discovery_method"){
+            let otherCount = 0
+            let shiftCount = 0
+
+            vis.values.sort((a, b) => a[1] - b[1])
+            vis.values.forEach(value => {
+                console.log(vis.data.length / 100)
+                
+                if(value[1] < (vis.data.length / 100)){
+                    otherCount += value[1]
+                    shiftCount += 1
+                }
+            })
+
+            for (let i = 0; i < shiftCount; i++){
+                vis.values.shift()
+            }
+
+            vis.values.push(["Other", otherCount])
+
+            console.log(vis.values)
+        }
+
 
         vis.xValue = d => d[0]
         vis.yValue = d => d[1]
@@ -122,8 +158,15 @@ class BarChart {
                 .attr('x', d => vis.xScale(vis.xValue(d)))
 
         
-                
-        vis.xAxisGroup.call(vis.xAxis)
+        if(vis.discriminator == "discovery_method"){
+            vis.xAxisGroup.call(vis.xAxis)
+                .selectAll("text")
+                .attr("dx", "-2em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-65)")
+        }
+        else
+            vis.xAxisGroup.call(vis.xAxis)
         vis.yAxisGroup.call(vis.yAxis)
     }
 }

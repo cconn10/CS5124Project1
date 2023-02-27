@@ -1,4 +1,11 @@
-body {
-    font-size: 10px;
+body{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.axis-title {
+    font-size: 10px;
+}
+
+.chart-title {
+    font-size: 14px;
 }
