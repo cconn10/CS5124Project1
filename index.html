@@ -7,20 +7,59 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div>
-        <svg id="vis" width="1000" height="1000"></svg>
-        <svg id="vis2" width="1000" height="1000"></svg>
-        <svg id="vis3" width="1000" height="1000"></svg>
-        <svg id="vis4" width="1000" height="1000"></svg>
-        <svg id="vis5" width="1000" height="1000"></svg>
-        <svg id="vis6" width="1000" height="1000"></svg>
-        <svg id="vis7" width="1000" height="1000"></svg>
-        <svg id="vis8" width="1000" height="1000"></svg>
+    <div class="header">
+        <p>Colin Conn - CS 5124 - Project 1 - Out of This World - D3.js</p>
+        <button onclick="updateData(fullData)" class="btn">Reset Filter</button>
+    </div>
+    <div id="tooltip" class="tooltip"></div>
+    <div class="container">
+        <div class="star-count">
+            <svg id="vis"></svg>
+        </div>
+        <div class="planet-count">
+            <svg id="vis2"></svg>
+        </div>
+        <div class="star-type">
+            <svg id="vis3"></svg>
+        </div>
+        <div class="discovery-method">
+            <svg id="vis4"></svg>
+        </div>
+        <div class="habitable-zone">
+            <svg id="vis5"></svg>
+            <ul class="legend">
+                <li><span class="legend-e too-cold"></span> Too Cold</li>
+                <li><span class="legend-e habitable"></span> Habitable</li>
+                <li><span class="legend-e too-hot"></span> Too Hot</li>
+                <li><span class="legend-e unknown"></span> Unknown</li>
+            </ul>
+        </div>
+        <div class="distance-from-earth">
+            <svg id="vis6"></svg>
+        </div>
+        <div class="mass-radius">
+            <svg id="vis7"></svg>
+            <ul class="legend legend-mvr">
+                <li><span class="legend-e unknown"></span> Unknown Mass or Radius</li>
+            </ul>
+        </div>
+        <div class="discovery-over-time">
+            <svg id="vis8"></svg>
+        </div>
+        <div class="exoplanet-table">
+            <table id="exoplanet-search">
+                <thead id="table-head"></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
     </div>
     
     <script src="js/d3.v6.min.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/barchart.js"></script>
+    <script src="js/starcount.js"></script>
+    <script src="js/planetcount.js"></script>
+    <script src="js/startype.js"></script>
+    <script src="js/discoverymethod.js"></script>
     <script src="js/splitbarchart.js"></script>
     <script src="js/histogram.js"></script>
     <script src="js/scatterplot.js"></script>

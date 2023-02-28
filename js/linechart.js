@@ -3,9 +3,10 @@ class LineChart {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 900,
-            containerHeight: _config.containerHeight || 200,
-            margin: { top: 15, right: 10, bottom: 30, left: 50 }
+            containerWidth: _config.containerWidth || 700,
+            containerHeight: _config.containerHeight || 250,
+            margin: { top: 50, right: 20, bottom: 40, left: 70 },
+            tooltipPadding: _config.tooltipName || 15
         }
 
         this.data = _data
@@ -18,8 +19,6 @@ class LineChart {
 
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom
-
-        vis.values = Array.from(d3.rollup(vis.data, d => d.length, d=>d.disc_year)).sort((x, y) => x[0] - y[0])
 
         vis.chart = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
@@ -43,11 +42,36 @@ class LineChart {
         
         vis.yAxisGroup = vis.chart.append('g')
             .attr('class', 'axis y-axis')
+
+        vis.chart.append('text')
+            .attr('class', 'axis-title')
+            .attr('y', vis.height + 25)
+            .attr('x', 300)
+            .attr('dy', '.71em')
+            .style('text-anchor', 'end')
+            .text("Year")
+        
+        vis.chart.append('text')
+            .attr('class', 'axis-title')
+            .attr('y', -50)
+            .attr('x', -vis.height + 30)
+            .attr('dy', '.71em')
+            .attr('transform', `rotate(-90)`)
+            .text("Exoplanets Discovered")
+
+        vis.chart.append('text')
+            .attr('class', 'chart-title')
+            .attr('y', -20)
+            .attr('x', 250)
+            .attr('dy', '.71em')
+            .text("Distance from Earth")
     }
 
     updateVis() {
         let vis = this
 
+        vis.values = Array.from(d3.rollup(vis.data, d => d.length, d=>d.disc_year)).sort((x, y) => x[0] - y[0])
+        
         vis.xValue = d => new Date(`${d[0]}-01-01T00:00:00`)
         vis.yValue = d => d[1]
 
@@ -65,13 +89,15 @@ class LineChart {
     renderVis() {
         let vis = this
 
+        vis.chart.selectAll('path').remove();
+
         vis.chart.append('path')
             .data([vis.values])
             .attr('class', 'chart-line')
-            .attr('stroke', 'black')
+            .attr('stroke', '#4FB062')
             .attr('fill', 'none')
             .attr('d', d => vis.line(d))
-                
+        
         vis.xAxisGroup.call(vis.xAxis)
         vis.yAxisGroup.call(vis.yAxis)
     }

@@ -1,11 +1,11 @@
-class Histogram {
+class PlanetCount {
     
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 325,
+            containerWidth: _config.containerWidth || 300,
             containerHeight: _config.containerHeight || 300,
-            margin: { top: 25, right: 20, bottom: 65, left: 70 },
+            margin: { top: 40, right: 10, bottom: 70, left: 70 },
             tooltipPadding: _config.tooltipName || 15
         }
 
@@ -26,8 +26,9 @@ class Histogram {
             .append('g')
                 .attr('transform', `translate(${vis.config.margin.left}, ${vis.config.margin.top})`)
 
-        vis.xScale = d3.scaleLinear()
+        vis.xScale = d3.scaleBand()
             .range([0, vis.width])
+            .paddingInner(0.15)
 
         vis.yScale = d3.scaleLinear()
             .range([vis.height, 0])
@@ -41,44 +42,45 @@ class Histogram {
         
         vis.yAxisGroup = vis.chart.append('g')
             .attr('class', 'axis y-axis')
-        
+
+        let xAxisLabel = {x: 150, y: vis.height + 30}
+        let yAxisLabel = {x: -vis.height + vis.config.margin.bottom, y: -60}
+        let titleLabel = {x: vis.config.margin.right, y: -20}
+
         vis.chart.append('text')
             .attr('class', 'axis-title')
-            .attr('y', vis.height + 50)
-            .attr('x', vis.config.containerWidth / 2)
+            .attr('y', xAxisLabel.y)
+            .attr('x', xAxisLabel.x)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
-            .text("Distance (parsecs)")
+            .text("Planets in System")
         
         vis.chart.append('text')
             .attr('class', 'axis-title')
-            .attr('y', -50)
-            .attr('x', -vis.height + 70)
+            .attr('y', yAxisLabel.y)
+            .attr('x', yAxisLabel.x)
             .attr('dy', '.71em')
             .attr('transform', `rotate(-90)`)
             .text("Number of Exoplanets")
 
         vis.chart.append('text')
             .attr('class', 'chart-title')
-            .attr('y', -20)
-            .attr('x', 60)
+            .attr('y', titleLabel.y)
+            .attr('x', titleLabel.x)
             .attr('dy', '.71em')
-            .text("Distance from Earth")
+            .text("Exoplanets by Planets in its System")
+
     }
 
     updateVis() {
         let vis = this
 
-        vis.xValue = d => d.sy_dist
-        vis.yValue = d => d.length
+        vis.values = Array.from(d3.rollup(vis.data, d => d.length, d => d.sy_pnum))
         
-        vis.bins = d3.bin()
-        .thresholds(10)
-        .value(d => d.sy_dist)
-        
-        vis.values = vis.bins(vis.data)
+        vis.xValue = d => d[0]
+        vis.yValue = d => d[1]
 
-        vis.xScale.domain([0, d3.max(vis.values, d => d.x1)])
+        vis.xScale.domain(vis.values.map(d => d[0]).sort())
         vis.yScale.domain([0, d3.max(vis.values, d => vis.yValue(d))]).nice()
 
         vis.renderVis()
@@ -86,36 +88,34 @@ class Histogram {
 
     renderVis() {
         let vis = this
-
-        vis.chart.selectAll('.hist')
+        
+        vis.bars = vis.chart.selectAll('.bar')
             .data(vis.values)
             .join('rect')
-                .attr('class', 'hist')
+                .attr('class', 'bar')
                 .attr('fill', '#4FB062')
-                .attr('x', 0)
-                .attr('transform', d => `translate(${vis.xScale(d.x0)}, ${vis.yScale(vis.yValue(d))})`)
-                .attr('width', d => vis.xScale(d.x1) - vis.xScale(d.x0) - 1)
+                .attr('width', vis.xScale.bandwidth())
                 .attr('height', d => vis.height - vis.yScale(vis.yValue(d)))
+                .attr('y', d => vis.yScale(vis.yValue(d)) )
+                .attr('x', d => vis.xScale(vis.xValue(d)))
                 .on('mouseover', (event, d) => {
                     d3.select("#tooltip")
                         .style('display', 'block')
                         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
                         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                         .html(`
-                        <p>Bin: ${d.x0} - ${d.x1} Parsecs </p>
-                        <p>Count: ${vis.yValue(d)}</p>
+                        <p>Planets in System: ${vis.xValue(d)}
+                        <p>Count: ${vis.yValue(d)}
                         `)
                 }).on('mouseout', (event, d) => {
                     d3.select("#tooltip")
                         .style('display', 'none')
+                }).on('click', (event, d) => {
+                    filterData(vis.data.filter(f => f.sy_pnum == d[0]))
                 })
-                
-                
+
+
         vis.xAxisGroup.call(vis.xAxis)
-            .selectAll("text")
-            .attr("dx", "-2.5em")
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-25)")
         vis.yAxisGroup.call(vis.yAxis)
     }
 }

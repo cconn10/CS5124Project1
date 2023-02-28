@@ -1,11 +1,161 @@
-body{
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #efefef;
+}
+
+a {
+    text-decoration: underline;
+    fill: #1028d0;
+}
+
+.btn {
+    background-color: lightslategrey;
+    border: none;
+    border-radius: 20px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.header p {
+    font-size: 14px;
+    margin: 5px 0
 }
 
 .axis-title {
-    font-size: 10px;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .chart-title {
     font-size: 14px;
+    font-weight: 500;
+}
+
+.active {
+    border: 1px solid #333
+}
+
+.bar {
+    cursor: pointer;
+}
+
+svg {
+    display: flex;
+}
+
+/*CSS Grid*/
+.container {
+    border: none !important;
+    width: 98vw;
+    height: 90vh;
+    display: grid;
+    grid-template-columns: [start] 25% [line2] 25% [line3] 25% [line4] 25% [end];
+    grid-template-rows: [start] 35% [line2] 35% [line3] 30% [end];
+}
+
+.star-count {
+    grid-column: start / line2;
+    grid-row: start / line2;
+}
+.planet-count {
+    grid-column: line2 / line3;
+    grid-row: start / line2;
+}
+.star-type {
+    grid-column: line3 / line4;
+    grid-row: start / line2;
+}
+.habitable-zone {
+    grid-column: line4 / end;
+    grid-row: start / line2;
+}
+.discovery-method{
+    grid-column: start / line2;
+    grid-row: line2 / line3;
+}
+.distance-from-earth {
+    grid-column: line2 / line3;
+    grid-row: line2 / line3;
+}
+.mass-radius {
+    grid-column: line3 / end;
+    grid-row: line2 / line3;
+}
+.discovery-over-time {
+    grid-column: start / line3;
+    grid-row: line3 / end;
+}
+.exoplanet-table {
+    grid-column: line3 / end;
+    grid-row: line3 / end;
+}
+
+/*Legend*/
+.legend {
+    list-style: none;
+    margin: 0;
+}
+.legend-mvr {
+    margin-left: 60px;
+}
+.legend li {
+    display: inline-block;
+    margin: 0 10px 0 0;
+    font-size: 12px;
+}
+.legend-e {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+}
+.legend-e.too-cold {
+    background: #748CAB;
+}
+.legend-e.habitable {
+    background: #4FB062;
+}
+.legend-e.too-hot {
+    background: #E86A92;
+}
+.legend-e.unknown {
+    background: #230C33;
+}
+
+/*Table*/
+.exoplanet-table{
+    height: 250px;
+    overflow-y: scroll;
+    border: 2px solid black;
+}
+table, th, td {
+    border-collapse: collapse;
+}
+th, td{
+    padding: 5px 10px;
+    border: 1px solid black;
+}
+th {
+    position: sticky;
+    background-color: #cfcfcf;
+    border: 1px solid black;
+    top: -1px;
+    height: 30px
+}
+td {
+    height: 20px
+}
+
+
+/*Tooltip*/
+#tooltip {
+    position: absolute;
+    display: none;
+    background: #FFF;
+    box-shadow: 3px 3px 3px 0 rgb(92 92 92 / 0.5);
+    min-width: 100px;
+    color:#333;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 100;
 }
